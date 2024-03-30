@@ -1,0 +1,47 @@
+1. webapi setTimeout-ის callback ფუნქციას console.log("1") 0 წამის შემდეგ(ეგრევე) გადაუშვებს macrotask queue-ში
+microqueue:
+macroqueue: {console.log("1")}
+output:
+
+2. ამ დროს microtask queue-ში ჩავარდება Promise-ის callback ფუნქცია console.log("2")
+microqueue: {console.log("2")}
+macroqueue: {console.log("1")}
+output:
+
+3. console.log("3") ჩავარდება stack-ში და შემდეგ შერსულდება და დაილოგება 3
+microqueue: {console.log("2")}
+macroqueue: {console.log("1")}
+output: 3
+
+4. logit2() resolve-ს გაუშვებს macro queue-ში, რადგან promise-ის შესასრულებელი ფუნქცია ჩასმულია setTimeout-ის ტანში
+microqueue: {console.log("2")}
+macroqueue: {console.log("1")} , {console.log("4")}
+output: 3
+
+5. logit resolve()-ს გაუშვებს micro queue-ში
+microqueue: {console.log("2")}, {console.log("5")}
+macroqueue: {console.log("1")} , {console.log("4")}
+output: 3
+
+6. console.log("6") ჩავარდება სტეკში და დაილოგება
+microqueue: {console.log("2")}, {console.log("5")}
+macroqueue: {console.log("1")} , {console.log("4")}
+output: 3 6
+
+7. ჯერ შესრულდება microqueue-ს ტასკები
+microqueue:  {console.log("5")}
+macroqueue: {console.log("1")} , {console.log("4")}
+output: 3 6 2
+
+microqueue: 
+macroqueue: {console.log("1")} , {console.log("4")}
+output: 3 6 2 5
+
+8. შემდეგ შერსულდება macroqueue-ს ტასკები
+microqueue: 
+macroqueue:  {console.log("4")}
+output: 3 6 2 5 1
+
+microqueue: 
+macroqueue: 
+output: 3 6 2 5 1 4
